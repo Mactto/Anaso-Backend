@@ -37,7 +37,7 @@ ex. if (true) {
 
 * github PR요청 시 
 ex) [BE] 개발:: 로그인기능 구현 (율희)
-     [BE] 수정, 디버깅 :: 뭘했는지랑 (율희)
+     [BE] 수정, 디버깅 :: 구현 사항 (율희)
      
 ---
 
@@ -46,3 +46,7 @@ ex) [BE] 개발:: 로그인기능 구현 (율희)
 * Standard JS
 * Airbnb js style guide
 * Airbnb js style guide 번역본
+
+
+
+---
