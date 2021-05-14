@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const saltRounds = 10;
 const jwt = require('jsonwebtoken');
+const moment = require('moment');
 
 const userSchema = mongoose.Schema({
     name: {
@@ -44,6 +46,27 @@ const userSchema = mongoose.Schema({
         default: []
     }
 })
+
+// userSchema.pre('save', function(next) {
+//     var user = this;
+
+//     if(user.isModified('password')) {
+//         bcrypt.genSalt(saltRounds, function(err, salt) {
+//             if (err) return next(err);
+//             user.password = bcrypt.hashSync(user.password, 10);
+//             next()
+//         })
+//     } else {
+//         next()
+//     }
+// });
+
+// userSchema.methods.comparePasword = function(plainPassword, cb) {
+//     bcrypt.compare(plainPassword, this.password, function(err, isMatch) {
+//         if (err) return cb(err);
+//         cb(null, isMatch)
+//     })
+// }
 
 const User = mongoose.model('User', userSchema);
 
