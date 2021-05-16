@@ -6,7 +6,6 @@ const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
-const authRouter = require('./routes/auth');
 
 const config = require('./config/key');
 const mongoose = require('mongoose');
@@ -24,8 +23,6 @@ const passportConfig = require('./config/passport');
 
 const app = express();
 
-// view engine setup
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -36,7 +33,6 @@ passportConfig();
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/auth', authRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

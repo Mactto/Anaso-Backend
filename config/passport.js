@@ -11,14 +11,24 @@ module.exports = () => {
             usernameField: 'email',
             passwordField: 'password'
         }, function (email, password, done) {
-            return User.findOne({email: email})
-            .then(user => {
-                if (!user) {
-                    return done(null, false, {messgae: '이메일 혹은 비밀번호가 일치하지 않습니다.'});
-                }
-                return done(null, user, {message: '성공적으로 로그인 되었습니다.'});
+            return User.findOne({email: email}, (err, user) => {
+                if (!user) 
+                    return res.done(null, false, {loginSuccess: false, message: "일치하는 이메일이 없습니다."})
+         
+                user.comparePasword(password, (err, isMatch => {
+                    if (!isMatch) 
+                        return done(null, false, {loginSuccess: false, message: "비밀번호가 일치하지 않습니다."})
+                          
+                    return done(null, user, {loginSuccess: true, message: "성공적으로 로그인 되었습니다."})
+                }))
             })
-            .catch(err => done(err));
+            // .then(user => {
+            //     if (!user) {
+            //         return done(null, false, {messgae: '이메일 혹은 비밀번호가 일치하지 않습니다.'});
+            //     }
+            //     return done(null, user, {message: '성공적으로 로그인 되었습니다.'});
+            // })
+            // .catch(err => done(err));
         }
     ));
 
@@ -27,7 +37,7 @@ module.exports = () => {
             jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
             secretOrKey: process.env.JWT_SECRET
         }, function(jwtPayload, done) {
-            return UserModel.findOneById(jwtPayload.id)
+            return User.findOne(jwtPayload.id)
             .then(user => {
                 return done(null, user);
             })
