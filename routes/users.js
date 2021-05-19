@@ -21,7 +21,7 @@ router.post('/signin', function(req, res) {
             res.send(err);
         }
         const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET);
-        return res.json({user, token});
+        return res.json({token});
     });
 }) (req, res);
 })
@@ -33,6 +33,16 @@ router.post("/signup", function(req, res) {
     if(err) return res.json({ success: false, message: "해당 이메일의 사용자가 이미 존재합니다."});
     return res.status(200).json({
       success:true
+    });
+  });
+});
+
+router.delete('/deleteUser', passport.authenticate('jwt', {session: false}), function(req, res) {
+  User.findOneAndDelete({'_id': req.user._id}, function(err, result) {
+    if (err) return res.json({ success: false, message: "유저를 삭제하는데 실패했습니다."});
+    return res.status(200).json({
+      success: true,
+      message: "정상적으로 유저가 삭제되었습니다."
     });
   });
 });
