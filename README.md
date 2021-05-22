@@ -54,5 +54,7 @@ ex) [BE] 개발:: 로그인기능 구현 (율희)
 1. key 파일 위치 시키기
 2. nodemon 설치
 > npm install nodemon --save-dev
-3. npm run start
+3. 아래 명령어 입력
+> export JWT_SECRET=secret
+4. npm run start
 > npm run start
