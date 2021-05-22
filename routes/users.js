@@ -47,6 +47,16 @@ router.delete('/deleteUser', passport.authenticate('jwt', {session: false}), fun
   });
 });
 
+router.put('/updateUser', passport.authenticate('jwt', {session: false}), function(req, res) {
+  User.findOneAndUpdate({'_id': req.user._id}, req.body , function(err, result) {
+    if (err) return res.json({ success: false, message: "유저를 업데이트 하는데 실패했습니다."});
+    return res.status(200).json({
+      success:true,
+      message: "성공적으로 유저 정보가 업데이트 되었습니다."
+    })
+  });
+});
+
 // JWT 인증 -> 반환값 : user 정보 (request 방법 -> Authenticate Bearer 토큰값)
 router.get("/auth_user", passport.authenticate('jwt', {session: false}), async function(req, res, next) {
   try {
