@@ -50,3 +50,9 @@ ex) [BE] 개발:: 로그인기능 구현 (율희)
 
 
 ---
+## 💻서버 구동
+1. key 파일 위치 시키기
+2. nodemon 설치
+> npm install nodemon --save-dev
+3. npm run start
+> npm run start
