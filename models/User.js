@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const jwt = require('jsonwebtoken');
-const moment = require('moment');
 
 const userSchema = mongoose.Schema({
     name: {
@@ -44,6 +42,10 @@ const userSchema = mongoose.Schema({
     projects: {
         type: Array,
         default: []
+    },
+    role : {
+        type: Number,
+        default: 0
     }
 })
 
