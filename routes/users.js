@@ -5,6 +5,7 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 
 const multer = require('multer');
+const { json } = require('express');
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, 'uploads/');
@@ -13,7 +14,11 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}_${file.originalname}`);
   }
 })
-const upload = multer({ storage: storage }).single("profileImage");
+const upload = multer({ storage: storage })
+
+router.post('/uploadProfileImage', upload.single("profileImage"), function(req, res) {
+  return res.json({"message": "이미지 업로드 완료"})
+})
 
 router.post('/signin', function(req, res) {
   passport.authenticate('local', {session: false}, (err, user) => {
@@ -34,22 +39,17 @@ router.post('/signin', function(req, res) {
 }) (req, res);
 })
 
-router.post("/signup" ,function(req, res) {
+router.post("/signup", function(req, res) {
   let user = new User(req.body);
 
   
   user.save(function(err, doc) {
     if(err) return res.json({ success: false, message: "해당 이메일의 사용자가 이미 존재합니다."});
     
-    upload(req, res, (err) => {
-      if (err) {
-        return res.json({ success: false, err });
-      }
-      return res.status(200).json({
-        success:true,
-        body: req.body
-      });
-    })
+    return res.status(200).json({
+      success:true,
+      body: req.body
+    });
   });
 });
 
