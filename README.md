@@ -45,4 +45,4 @@ ex) [BE] 개발:: 로그인기능 구현 (율희)
 * Google JavaScript Style Guide
 * Standard JS
 * Airbnb js style guide
-* Airbnb js style guide 번역본
+* Airbnb js style guide 번역본 
