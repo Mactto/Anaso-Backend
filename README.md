@@ -57,4 +57,4 @@ ex) [BE] 개발:: 로그인기능 구현 (율희)
 3. 아래 명령어 입력 (JWT 토큰 키 설정)
 > export JWT_SECRET="시크릿키"
 4. npm run start
-> npm run start
+> npm run start 
