@@ -60,13 +60,7 @@ const contestSchema = mongoose.Schema({
             default: []
         }
     }
-})
-
-/*
-
-== contest model의 method ==
-
-*/
+});
 
 const Contest = mongoose.model('Contest', contestSchema);
 
