@@ -119,19 +119,26 @@ router.patch("/confirmMember/:id", async (req, res) => {
             return
         }
 
+        const memberIdx = contest.volunteers.indexOf(req.body.member);
+        if (memberIdx > -1) contest.volunteers.splice(memberIdx, 1);
+        else throw new Error("isNotVolunteer");
+
         contest.confirmedMembers.membersList.push( req.body.member );
         contest.confirmedMembers.membersNum += 1;
 
-        const memberIdx = contest.volunteers.indexOf(req.body.member);
-        if (memberIdx > -1) contest.volunteers.splice(memberIdx, 1);
-
-        contest.closingStatus = true;
+        if (contest.confirmedMembers.membersNum === contest.totalMembers) {
+            contest.closingStatus = true;
+        }
 
         await contest.save();
 
         res.status(201);
         res.send(contest);
-    } catch {
+    } catch (e) {
+        if (e.message === "isNotVolunteer") {
+            res.status(403);
+            res.send({ error: "The member is not volunteer." });
+        }
         res.status(404);
         res.send({ error: "Contest doesn't exist!" });
     }
