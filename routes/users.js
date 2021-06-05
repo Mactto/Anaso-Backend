@@ -17,7 +17,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 router.post('/uploadProfileImage', upload.single("profileImage"), function(req, res) {
-  return res.json({"message": "이미지 업로드 완료"})
+  return res.status(200).json({
+    message: "이미지 업로드 성공",
+    filePath: res.req.file.path, 
+    fileName: res.req.file.filename
+  })
 })
 
 router.post('/signin', function(req, res) {

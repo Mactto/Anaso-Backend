@@ -13,7 +13,7 @@ module.exports = () => {
         }, function (email, password, done) {
             return User.findOne({email: email}, (err, user) => {
                 if (!user) 
-                    return res.done(null, false, {loginSuccess: false, message: "일치하는 이메일이 없습니다."})
+                    return done(null, false, {loginSuccess: false, message: "일치하는 이메일이 없습니다."})
          
                 user.comparePasword(password, (err, isMatch) => {
                     if (!isMatch) 
