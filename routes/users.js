@@ -19,8 +19,8 @@ const upload = multer({ storage: storage })
 router.post('/uploadProfileImage', upload.single("profileImage"), function(req, res) {
   return res.status(200).json({
     message: "이미지 업로드 성공",
-    filePath: res.req.file.path, 
-    fileName: res.req.file.filename
+    filePath: req.file.path, 
+    fileName: req.file.filename
   })
 })
 
@@ -38,7 +38,10 @@ router.post('/signin', function(req, res) {
         }
         
         const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET);
-        return res.json({token});
+        return res.json({
+          token: token,
+          userInfo: user
+        });
     });
 }) (req, res);
 })
