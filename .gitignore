@@ -5,6 +5,7 @@
 ### Node ###
 
 config/dev.js
+.uploads/
 
 # Logs
 logs

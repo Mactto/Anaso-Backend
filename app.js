@@ -7,6 +7,7 @@ const logger = require('morgan');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const projectsRouter = require('./routes/projects');
+const contestsRouter = require('./routes/contests');
 
 const config = require('./config/key');
 const mongoose = require('mongoose');
@@ -26,15 +27,18 @@ const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
+app.use('/uploads', express.static('uploads'));
 passportConfig();
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/projects', projectsRouter);
+app.use('/contests', contestsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
