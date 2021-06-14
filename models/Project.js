@@ -14,6 +14,7 @@ const projectSchema = mongoose.Schema({
     },
     endDate: {
         type: String
+        
     },
     thumbnail: {
         type: String
