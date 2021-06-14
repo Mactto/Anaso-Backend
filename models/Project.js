@@ -13,7 +13,8 @@ const projectSchema = mongoose.Schema({
         default: Date.now()
     },
     endDate: {
-        type: Date,
+        type: String
+        
     },
     thumbnail: {
         type: String
