@@ -5,9 +5,30 @@ const ExtractJWT = passportJWT.ExtractJwt;
 const LocalStrategy = require('passport-local').Strategy;
 const {User} = require('../models/User');
 
+const JWTConfig = {
+    jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.JWT_SECRET
+}
+
+const JWTVerify = async (jwtPayload, done) => {
+    try {
+        const user = await User.findOne({'_id': jwtPayload.id});
+
+        if (user) {
+            console.log(user);
+            done(null, user);
+            return;
+        }
+        done(null, false, {message: '올바르지 않은 인증정보입니다.'});
+    } catch(err) {
+        console.error(err);
+        done(err);
+    }
+}
+
 module.exports = () => {
     // 로컬 로그인 전략
-    passport.use(new LocalStrategy({
+    passport.use('local', new LocalStrategy({
             usernameField: 'email',
             passwordField: 'password'
         }, function (email, password, done) {
@@ -26,17 +47,5 @@ module.exports = () => {
     ));
 
     // JWT 인증 전략
-    passport.use(new JWTStrategy({
-            jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-            secretOrKey: process.env.JWT_SECRET
-        }, function(jwtPayload, done) {
-            return User.findOne(jwtPayload.id)
-            .then(user => {
-                return done(null, user);
-            })
-            .catch(err => {
-                return done(err);
-            });
-        }
-    ));
+    passport.use('jwt', new JWTStrategy(JWTConfig, JWTVerify));
 }
