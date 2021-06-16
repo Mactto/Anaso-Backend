@@ -27,7 +27,7 @@ router.post("/create", async (req, res) => {
 });
 
 // [GET] read contest
-router.get("/:id", async (req, res) => {
+router.get("/detail/:id", async (req, res) => {
     try {
         const contest = await Contest.findOne({ _id: req.params.id });
         contest.hitCount += 1;

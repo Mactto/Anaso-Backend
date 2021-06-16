@@ -31,8 +31,8 @@ const contestSchema = mongoose.Schema({
         type: String
     },
     category: { // 공모전 카테고리
-        type: Array,
-        default: []
+        type: String,
+        default: "",
     },
     organizer: { // 주최기관
         type: String,
