@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const {Project} = require('../models/Project');
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
 
 router.get("/lists", async (req, res) => {
     const projects = await Project.find()
@@ -8,7 +10,7 @@ router.get("/lists", async (req, res) => {
 })
 module.exports = router;
 
-router.post("/create", async (req, res) => {
+router.post("/create", passport.authenticate('jwt', {session: false}), async (req, res) => {
     const projects = new Project({
         title: req.body.title,
         participant: req.body.participant,
@@ -32,7 +34,7 @@ router.get("/:id", async (req, res) => {
     }
 })
 
-router.patch("/:id", async (req, res) => {
+router.patch("/:id",passport.authenticate('jwt', {session: false}), async (req, res) => {
     try {
         const project = await Project.findOne({ _id: req.params.id })
 
@@ -42,14 +44,6 @@ router.patch("/:id", async (req, res) => {
 
         if (req.body.participant) {
             project.participant = req.body.participant
-        }
-
-        if (req.body.startDate) {
-            project.startDate = req.body.startDate
-        }
-
-        if (req.body.endDate) {
-            project.endDate = req.body.endDate
         }
 
         if (req.body.thumbnail) {
@@ -72,7 +66,7 @@ router.patch("/:id", async (req, res) => {
     
 })
 
-router.delete("/delete/:id", async (req, res) => {
+router.delete("/delete/:id",passport.authenticate('jwt', {session: false}), async (req, res) => {
     try{
         await Project.deleteOne({ _id: req.params.id })
         res.status(204).send()
