@@ -32,16 +32,21 @@ module.exports = () => {
             usernameField: 'email',
             passwordField: 'password'
         }, function (email, password, done) {
-            return User.findOne({email: email}, (err, user) => {
-                if (!user) 
-                    return done(null, false, {loginSuccess: false, message: "일치하는 이메일이 없습니다."})
-         
+            User.findOne({email: email}).exec()
+            .then((user) => {
+                if (!user) {
+                    return done(null, false, { loginSuccess: false, message: "일치하는 이메일이 없습니다."});
+                }
                 user.comparePasword(password, (err, isMatch) => {
                     if (!isMatch) 
-                        return done(null, false, {loginSuccess: false, message: "비밀번호가 일치하지 않습니다."})
+                        return done(null, false, { loginSuccess: false, message: "비밀번호가 일치하지 않습니다." })
                           
-                    return done(null, user, {loginSuccess: true, message: "성공적으로 로그인 되었습니다."})
+                    return done(null, user, { loginSuccess: true, message: "성공적으로 로그인 되었습니다." })
                 })
+            })
+            .catch((err) => {
+                console.log(err);
+                return done(null, false, { locinSuccess: false, err: err });
             })
         }
     ));
