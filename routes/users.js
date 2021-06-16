@@ -81,7 +81,13 @@ router.delete('/deleteUser', passport.authenticate('jwt', {session: false}), fun
 });
 
 router.put('/updateUserInfo', passport.authenticate('jwt', {session: false}), function(req, res) {
-  console.log(req.user);
+  if (req.body.password) {
+    return res.status(400).json({
+      success: false,
+      message: "잘못된 요청입니다."
+    })
+  }
+
   User.findOneAndUpdate({'_id': req.user._id}, req.body).exec()
   .then((result) => {
     return res.status(200).json({
