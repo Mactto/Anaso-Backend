@@ -6,15 +6,8 @@ const projectSchema = mongoose.Schema({
         maxlength: 100
     },
     participant: {
-        type: String
-    },
-    startDate: {
-        type: Date,
-        default: Date.now()
-    },
-    endDate: {
-        type: String
-        
+        type: Array,
+        default: []
     },
     thumbnail: {
         type: String
