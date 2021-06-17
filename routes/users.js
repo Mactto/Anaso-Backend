@@ -4,17 +4,8 @@ const {User} = require('../models/User');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 
-const multer = require('multer');
+const upload = require('../modules/multer');
 const { json } = require('express');
-const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function(req, file, cb) {
-    cb(null, `${Date.now()}_${file.originalname}`);
-  }
-})
-const upload = multer({ storage: storage })
 
 router.post('/uploadProfileImage', upload.single("profileImage"), function(req, res) {
   return res.status(200).json({
