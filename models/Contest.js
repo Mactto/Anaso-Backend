@@ -1,5 +1,33 @@
 const mongoose = require('mongoose');
 
+const positionSchema = mongoose.Schema({
+    positionName: { // 포지션 이름
+        type: String,
+        default: ""
+    },
+    recruitNumbers: { // 모집 인원
+        type: Number,
+        default: 0
+    },
+    applyNumbers: { // 신청 인원
+        type: Number,
+        default: 0
+    },
+    applyMembers: { // 신청 인원 목록
+        type: Array,
+        default: []
+    },
+    confirmedNumbers: { // 승인 인원
+        type: Number,
+        default: 0
+    },
+    confirmedMembers: { // 숭인 인원 목록
+        type: Array,
+        default: []
+    }
+});
+const Position = mongoose.model('Position', positionSchema);
+
 const contestSchema = mongoose.Schema({
     contestName: { // 공모전 이름
         type: String,
@@ -24,6 +52,10 @@ const contestSchema = mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    supportScale: {
+        type: String,
+        default: ""
+    },
     detail: { // 세부사항
         type: String
     },
@@ -38,6 +70,10 @@ const contestSchema = mongoose.Schema({
         type: String,
         maxlength: 100
     },
+    homepage: { // 공모전 주소
+        type: String,
+        default: ""
+    },
     closingStatus: { // 모집 마감여부
         type: Boolean,
         default: false
@@ -46,22 +82,21 @@ const contestSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
-    volunteers: { // 지원자 목록
-        type: Array,
-        default: []
-    },
-    confirmedMembers: { // 모집 완료 인원
-        membersNum: { // 완료된 총 모집 인원 수
+    applyStatus: { // 신청 현황
+        totalApplyNumbers: { // 전체 신청 인원
             type: Number,
             default: 0
         },
-        membersList: { // 모집 인원 리스트
+        totalConfirmedNumbers: { // 전체 승인 인원
+            type: Number,
+            default: 0
+        },
+        positions: {
             type: Array,
-            default: []
+            default: [Position]
         }
     }
 });
-
 const Contest = mongoose.model('Contest', contestSchema);
 
 module.exports = { Contest }
