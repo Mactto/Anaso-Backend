@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const passport = require('passport');
 const { Contest } = require('../models/Contest');
 
 // [GET] read contest lists
@@ -9,21 +10,35 @@ router.get("/lists", async (req, res) => {
 });
 
 // [POST] create contest
-router.post("/create", async (req, res) => {
-    const contests = new Contest({
+router.post("/create", passport.authenticate('jwt', {session: false}), async (req, res) => {
+    const positions = req.body.applyStatus.positions;
+    
+    const contest = new Contest({
         contestName: req.body.contestName, // 공모전 이름
         title: req.body.title, // 게시글 제목
         author: req.body.author, // 작성자
         deadLine: req.body.deadLine, // 마감일자
+        supportScale: req.body.supportScale, // 지원 규모
         detail: req.body.detail, // 세부사항
         poster: req.body.poster, // 공모전 포스터
         category: req.body.category, // 공모전 카테고리
         organizer: req.body.organizer, // 주최기관
+        homepage: req.body.homepage, // 공모전 주소
         totalMembers: req.body.totalMembers, // 전체 모집 인원
     });
-    await contests.save();
+    positions.forEach(element => {
+        contest.applyStatus.positions.push({
+            positionName: element.positionName,
+            recruitNumbers: element.recruitNumbers,
+            applyNumbers: 0,
+            applyMembers: [],
+            confirmedNumbers: 0,
+            confirmedMembers: []
+        });
+    });
+    await contest.save();
     res.status(201);
-    res.send(contests);
+    res.send(contest);
 });
 
 // [GET] read contest
@@ -40,7 +55,7 @@ router.get("/detail/:id", async (req, res) => {
 });
 
 // [PATCH] update contest
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", passport.authenticate('jwt', {session: false}), async (req, res) => {
     try {
         const contest = await Contest.findOne({ _id: req.params.id });
 
@@ -54,6 +69,10 @@ router.patch("/:id", async (req, res) => {
 
         if (req.body.deadLine) { // 마감일자
             contest.deadLine = req.body.deadLine;
+        }
+
+        if (req.body.supportScale) { // 지원 규모
+            contest.supportScale = req.body.supportScale;
         }
 
         if (req.body.detail) { // 세부사항
@@ -72,8 +91,16 @@ router.patch("/:id", async (req, res) => {
             contest.organizer = req.body.organizer
         }
 
-        if (req.body.totalMembers) { // 전체 모집 인원
-            contest.totalMembers = req.body.totalMembers;
+        if (req.body.organizer) { // 주최기관
+            contest.organizer = req.body.organizer
+        }
+
+        if (req.body.homepage) { // 전체 모집 인원
+            contest.homepage = req.body.homepage;
+        }
+
+        if (req.body.applyStatus.positions) {
+            contest.applyStatus.positions = req.body.applyStatus.positions;
         }
         
         await contest.save();
@@ -85,7 +112,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // [DELETE] delete contest
-router.delete("/delete/:id", async (req, res) => {
+router.delete("/delete/:id", passport.authenticate('jwt', {session: false}), async (req, res) => {
     try{
         await Contest.deleteOne({ _id: req.params.id });
         res.status(204).send();
@@ -99,7 +126,13 @@ router.delete("/delete/:id", async (req, res) => {
 router.patch("/participate/:id", async (req, res) => {
     try {
         const contest = await Contest.findOne({ _id: req.params.id });
-        contest.volunteers.push( req.body.volunteer );
+        contest.applyStatus.positions.forEach(element => {
+            if (element.positionName === req.body.positionName) {
+                element.applyMembers.push(req.body.volunteer);
+                element.applyNumbers += 1;
+                return;
+            }
+        });
         await contest.save();
         res.send(contest);
     } catch {
