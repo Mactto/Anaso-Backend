@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {Project} = require('../models/Project');
+const {User} = require('../models/User');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 
@@ -10,18 +11,19 @@ router.get("/lists", async (req, res) => {
 })
 module.exports = router;
 
-router.post("/create", passport.authenticate('jwt', {session: false}), async (req, res) => {
-    const projects = new Project({
-        title: req.body.title,
-        participant: req.body.participant,
-        startDate: req.body.startDate,
-        endDate: req.body.endDate,
-        thumbnail: req.body.thumbnail,
-        role: req.body.role,
-        explanation: req.body.content,
+router.post("/create", passport.authenticate('jwt', {session: false}), (req, res) => {
+    const projects = new Project(req.body)
+    
+    projects.save()
+    .then((result) => {
+        User.updateOne({ _id: req.user._id }, { $push: { projects: result._id } }).exec()
+        return res.send(result)  
     })
-    await projects.save()
-    res.send(projects)
+    .catch((err) => {
+        console.log(err);
+        return res.status(400)
+    })
+
 })
 
 router.get("/:id", async (req, res) => {

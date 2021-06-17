@@ -5,7 +5,6 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 
 const upload = require('../modules/multer');
-const { json } = require('express');
 
 router.post('/uploadProfileImage', upload.single("profileImage"), function(req, res) {
   return res.status(200).json({
