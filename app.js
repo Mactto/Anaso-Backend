@@ -4,7 +4,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
-const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const projectsRouter = require('./routes/projects');
 const contestsRouter = require('./routes/contests');
@@ -35,7 +34,6 @@ app.use(passport.initialize());
 app.use('/uploads', express.static('uploads'));
 passportConfig();
 
-app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/projects', projectsRouter);
 app.use('/contests', contestsRouter);
