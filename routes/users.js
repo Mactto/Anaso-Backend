@@ -14,6 +14,21 @@ router.post('/uploadProfileImage', upload.single("profileImage"), function(req, 
   })
 })
 
+router.get('/getPortfolios', function(req, res) {
+  User.find({}, {name:1, university:1, major:1, profileImage:1, description:1}).exec()
+  .then((result) => {
+    res.status(200).json({
+      "portfolios": result
+    })
+  })
+  .catch((err) => {
+    console.log(err);
+    res.status(400).json({
+      "err": err
+    })
+  })
+})
+
 router.post('/signin', function(req, res) {
   passport.authenticate('local', {session: false}, (err, user) => {
     if (err || !user) {
