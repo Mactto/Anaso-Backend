@@ -16,8 +16,7 @@ router.post("/create", passport.authenticate('jwt', {session: false}), (req, res
     
     projects.save()
     .then((result) => {
-        User.updateOne({ _id: req.user._id }, { $push: { projects: result._id } }).exec()
-        return res.send(result)  
+        return res.send(projects)  
     })
     .catch((err) => {
         console.log(err);
@@ -26,9 +25,9 @@ router.post("/create", passport.authenticate('jwt', {session: false}), (req, res
 
 })
 
-router.get("/:id", async (req, res) => {
+router.get("/:user_id", async (req, res) => {
     try{
-        const project = await Project.findOne({ _id: req.params.id })
+        const project = await Project.find({ user_id: req.params.user_id })
         res.send(project)
     } catch {
         res.status(404)

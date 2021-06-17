@@ -19,6 +19,9 @@ const projectSchema = mongoose.Schema({
         type: String,
         maslength: 1000
     },
+    user_id: {
+        type: String,
+    }
 })
 
 const Project = mongoose.model('Project', projectSchema);
