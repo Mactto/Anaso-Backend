@@ -5,6 +5,7 @@
 ### Node ###
 
 config/dev.js
+config/s3.json
 .uploads/
 
 # Logs
