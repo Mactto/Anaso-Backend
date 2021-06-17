@@ -10,8 +10,7 @@ const { json } = require('express');
 router.post('/uploadProfileImage', upload.single("profileImage"), function(req, res) {
   return res.status(200).json({
     message: "이미지 업로드 성공",
-    filePath: req.file.path, 
-    fileName: req.file.filename
+    file: req.file, 
   })
 })
 
