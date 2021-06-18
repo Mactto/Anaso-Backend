@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const { Contest } = require('../models/Contest');
+const upload = require('../modules/multer');
 
 // [GET] read contest lists
 router.get("/lists", async (req, res) => {
@@ -10,7 +11,7 @@ router.get("/lists", async (req, res) => {
 });
 
 // [POST] create contest
-router.post("/create", passport.authenticate('jwt', {session: false}), async (req, res) => {
+router.post("/create", passport.authenticate('jwt', {session: false}), upload.single("poster"), async (req, res) => {
     const positions = req.body.positions;
     
     const contest = new Contest({
@@ -25,6 +26,7 @@ router.post("/create", passport.authenticate('jwt', {session: false}), async (re
         organizer: req.body.organizer, // 주최기관
         homepage: req.body.homepage, // 공모전 주소
         totalMembers: req.body.totalMembers, // 전체 모집 인원
+        poster: req.file.location // 포스터
     });
     positions.forEach(element => {
         contest.positions.push({
@@ -123,23 +125,27 @@ router.delete("/delete/:id", passport.authenticate('jwt', {session: false}), asy
 });
 
 // [PATCH] participate contest
-router.patch("/participate/:id", async (req, res) => {
+router.patch("/participate/:id", passport.authenticate('jwt', {session: false}), async (req, res) => {
     try {
         const contest = await Contest.findOne({ _id: req.params.id });
-        let positionsIdx = -1;
-        contest.positions.forEach((element, index) => {
+        let position;
+        let positionId;
+
+        contest.positions.forEach(element => {
             if (element.positionName === req.body.positionName) {
-                element.applyMembers.push(req.body.volunteer);
-                console.log(req.body.volunteer);
-                element.applyNumbers += 1;
-                positionsIdx = index;
+                position = element;
+                positionId = element._id;
                 return;
             }
         });
+        contest.positions.id(positionId).remove();
+
+        position.applyMembers.push(req.body.volunteer);
+        position.applyNumbers += 1;
+        contest.positions.push(position);
         contest.applyStatus.totalApplyNumbers += 1;
-        console.log(1);
-        //contest.applyStatus.positions[positionsIdx].markModified('applyMembers');
-        console.log(2);
+        contest.markModified('positions');
+
         await contest.save();
         res.send(contest);
     } catch (e) {
@@ -150,13 +156,13 @@ router.patch("/participate/:id", async (req, res) => {
 });
 
 // [PATCH] confirm member at contest
-router.patch("/confirmMember/:id", async (req, res) => {
+router.patch("/confirmMember/:id", passport.authenticate('jwt', {session: false}), async (req, res) => {
     try {
         const contest = await Contest.findOne({ _id: req.params.id });
         if (contest.closingStatus === true) {
             throw new Error("closed");
         }
-        contest.applyStatus.positions.forEach(element => {
+        contest.positions.forEach(element => {
             if (element.positionName === req.body.positionName) {
                 element.confirmedMembers.push(req.body.volunteer);
                 element.confirmedNumbers += 1;
@@ -164,6 +170,8 @@ router.patch("/confirmMember/:id", async (req, res) => {
                 const idx = element.applyMembers.indexOf(req.body.volunteer);
                 element.applyMembers.splice(idx, 1);
                 element.applyNumbers -= 1;
+
+                element.markModified('confirmedMembers');
                 return;
             }
         });
@@ -172,7 +180,6 @@ router.patch("/confirmMember/:id", async (req, res) => {
         if (contest.applyStatus.totalConfirmedNumbers === contest.totalMembers) {
             contest.closingStatus = true;
         }
-        contest.markModified('confirmedMembers');
 
         await contest.save();
 
