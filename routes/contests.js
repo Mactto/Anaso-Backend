@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const { Contest } = require('../models/Contest');
+const upload = require('../modules/multer');
 
 // [GET] read contest lists
 router.get("/lists", async (req, res) => {
@@ -10,7 +11,7 @@ router.get("/lists", async (req, res) => {
 });
 
 // [POST] create contest
-router.post("/create", passport.authenticate('jwt', {session: false}), async (req, res) => {
+router.post("/create", passport.authenticate('jwt', {session: false}), upload.single("poster"), async (req, res) => {
     const positions = req.body.positions;
     
     const contest = new Contest({
@@ -25,6 +26,7 @@ router.post("/create", passport.authenticate('jwt', {session: false}), async (re
         organizer: req.body.organizer, // 주최기관
         homepage: req.body.homepage, // 공모전 주소
         totalMembers: req.body.totalMembers, // 전체 모집 인원
+        poster: req.file.location // 포스터
     });
     positions.forEach(element => {
         contest.positions.push({
