@@ -28,19 +28,19 @@ router.get('/getPortfolios', function(req, res) {
   })
 })
 
-router.get('/detailPortfolio/:id', function(req, res) {
-  User.findOne({_id: req.params.id}, {name:1, university:1, major:1, profileImage:1, description:1}).exec()
-  .then((result) => {
+router.get('/detailPortfolio/:id', async function(req, res) {
+  try {
+    const user = await User.findOne({_id: req.params.id}, {name:1, university:1, major:1, profileImage:1, description:1, hitCount:1})
+    user.hitCount += 1
+    user.save()
     return res.status(200).json({
-      "info": result
+      info: user
     })
-  })
-  .catch((err) => {
-    console.log(err);
+  } catch {
     return res.status(400).json({
-      "err": err
+      err: "Error"
     })
-  })
+  }
 })
 
 router.post('/signin', function(req, res) {
