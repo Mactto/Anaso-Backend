@@ -4,6 +4,7 @@ const {Project} = require('../models/Project');
 const {User} = require('../models/User');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
+const upload = require('../modules/multer');
 
 router.get("/lists", async (req, res) => {
     const projects = await Project.find()
@@ -11,17 +12,20 @@ router.get("/lists", async (req, res) => {
 })
 module.exports = router;
 
-router.post("/create", passport.authenticate('jwt', {session: false}), (req, res) => {
+router.post("/create", passport.authenticate('jwt', {session: false}), upload.single("thumbnail"), function(req, res) {
     const projects = new Project(req.body)
+    projects.thumbnail = req.file.location
     
-    projects.save()
-    .then((result) => {
-        return res.send(projects)  
-    })
-    .catch((err) => {
-        console.log(err);
-        return res.status(400)
-    })
+    if (projects.thumbnail){
+        projects.save()
+        .then((result) => {
+            return res.send(projects)  
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(400)
+        })
+    }
 
 })
 
