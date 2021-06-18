@@ -92,10 +92,7 @@ const contestSchema = mongoose.Schema({
             default: 0
         }
     },
-    positions: {
-        type: Array,
-        default: [Position]
-    }
+    positions: [positionSchema]
 });
 const Contest = mongoose.model('Contest', contestSchema);
 
