@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {Project} = require('../models/Project');
-const {User} = require('../models/User');
 const passport = require('passport');
-const jwt = require('jsonwebtoken');
-const upload = require('../modules/multer');
 
 router.get("/lists", async (req, res) => {
     const projects = await Project.find()
