@@ -40,10 +40,6 @@ const userSchema = mongoose.Schema({
         type: Array,
         default: []
     },
-    projects: {
-        type: Array,
-        default: []
-    },
     role : {
         type: Number,
         default: 0
