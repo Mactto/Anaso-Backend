@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {Project} = require('../models/Project');
 const passport = require('passport');
+const upload = require('../modules/multer');
 
 router.get("/lists", async (req, res) => {
     const projects = await Project.find()
