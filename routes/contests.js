@@ -21,12 +21,11 @@ router.post("/create", passport.authenticate('jwt', {session: false}), upload.si
         deadLine: req.body.deadLine, // 마감일자
         supportScale: req.body.supportScale, // 지원 규모
         detail: req.body.detail, // 세부사항
-        poster: req.body.poster, // 공모전 포스터
+        poster: req.file.location, // 공모전 포스터
         category: req.body.category, // 공모전 카테고리
         organizer: req.body.organizer, // 주최기관
         homepage: req.body.homepage, // 공모전 주소
-        totalMembers: req.body.totalMembers, // 전체 모집 인원
-        poster: req.file.location // 포스터
+        totalMembers: req.body.totalMembers // 전체 모집 인원
     });
     positions.forEach(element => {
         contest.positions.push({
