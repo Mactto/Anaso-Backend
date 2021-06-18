@@ -10,7 +10,7 @@ router.get("/lists", async (req, res) => {
 });
 
 // [POST] create contest
-router.post("/create", async (req, res) => {
+router.post("/create", passport.authenticate('jwt', {session: false}), async (req, res) => {
     const positions = req.body.positions;
     
     const contest = new Contest({
@@ -123,7 +123,7 @@ router.delete("/delete/:id", passport.authenticate('jwt', {session: false}), asy
 });
 
 // [PATCH] participate contest
-router.patch("/participate/:id", async (req, res) => {
+router.patch("/participate/:id", passport.authenticate('jwt', {session: false}), async (req, res) => {
     try {
         const contest = await Contest.findOne({ _id: req.params.id });
         let position;
@@ -154,7 +154,7 @@ router.patch("/participate/:id", async (req, res) => {
 });
 
 // [PATCH] confirm member at contest
-router.patch("/confirmMember/:id", async (req, res) => {
+router.patch("/confirmMember/:id", passport.authenticate('jwt', {session: false}), async (req, res) => {
     try {
         const contest = await Contest.findOne({ _id: req.params.id });
         if (contest.closingStatus === true) {
