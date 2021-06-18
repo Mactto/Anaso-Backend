@@ -16,22 +16,29 @@ router.post("/create", passport.authenticate('jwt', {session: false}), upload.si
     const projects = new Project(req.body)
     projects.thumbnail = req.file.location
     
-    if (projects.thumbnail){
-        projects.save()
-        .then((result) => {
-            return res.send(projects)  
-        })
-        .catch((err) => {
-            console.log(err);
-            return res.status(400)
-        })
-    }
-
+    projects.save()
+    .then((result) => {
+        return res.send(projects)  
+    })
+    .catch((err) => {
+        console.log(err);
+        return res.status(400)
+    })
 })
 
 router.get("/:user_id", async (req, res) => {
     try{
         const project = await Project.find({ user_id: req.params.user_id })
+        res.send(project)
+    } catch {
+        res.status(404)
+        res.send({ error: "Project doesn't exist!" })
+    }
+})
+
+router.get("/lists/:id", async (req, res) => {
+    try{
+        const project = await Project.findOne({ _id: req.params.id })
         res.send(project)
     } catch {
         res.status(404)
