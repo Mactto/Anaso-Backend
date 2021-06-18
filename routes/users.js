@@ -3,15 +3,7 @@ const router = express.Router();
 const {User} = require('../models/User');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
-
 const upload = require('../modules/multer');
-
-router.post('/uploadProfileImage', upload.single("profileImage"), function(req, res) {
-  return res.status(200).json({
-    message: "이미지 업로드 성공",
-    file: req.file, 
-  })
-})
 
 router.get('/getPortfolios', function(req, res) {
   User.find({}, {name:1, university:1, major:1, profileImage:1, description:1}).exec()
@@ -65,14 +57,15 @@ router.post('/signin', function(req, res) {
 }) (req, res);
 })
 
-router.post("/signup", function(req, res) {
-  let user = new User(req.body);
+router.post("/signup", upload.single("profileImage"), function(req, res) {
+  const user = new User(req.body);
+  user.profileImage = req.file.location
 
   user.save()
   .then((result) => {
     return res.status(200).json({
       success:true,
-      body: req.body
+      body: result
     });
   })
   .catch((err) => {
