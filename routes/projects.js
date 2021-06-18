@@ -14,8 +14,10 @@ module.exports = router;
 
 router.post("/create", passport.authenticate('jwt', {session: false}), upload.single("thumbnail"), function(req, res) {
     const projects = new Project(req.body)
-    projects.thumbnail = req.file.location
-    
+    if (req.file){
+        projects.thumbnail = req.file.location
+    }
+
     projects.save()
     .then((result) => {
         return res.send(projects)  
