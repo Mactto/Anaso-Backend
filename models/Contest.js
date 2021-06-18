@@ -52,7 +52,7 @@ const contestSchema = mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    supportScale: {
+    supportScale: { // 지원 규모
         type: String,
         default: ""
     },
@@ -90,11 +90,11 @@ const contestSchema = mongoose.Schema({
         totalConfirmedNumbers: { // 전체 승인 인원
             type: Number,
             default: 0
-        },
-        positions: {
-            type: Array,
-            default: [Position]
         }
+    },
+    positions: {
+        type: Array,
+        default: [Position]
     }
 });
 const Contest = mongoose.model('Contest', contestSchema);

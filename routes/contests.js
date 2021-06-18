@@ -11,7 +11,7 @@ router.get("/lists", async (req, res) => {
 
 // [POST] create contest
 router.post("/create", passport.authenticate('jwt', {session: false}), async (req, res) => {
-    const positions = req.body.applyStatus.positions;
+    const positions = req.body.positions;
     
     const contest = new Contest({
         contestName: req.body.contestName, // 공모전 이름
@@ -27,7 +27,7 @@ router.post("/create", passport.authenticate('jwt', {session: false}), async (re
         totalMembers: req.body.totalMembers, // 전체 모집 인원
     });
     positions.forEach(element => {
-        contest.applyStatus.positions.push({
+        contest.positions.push({
             positionName: element.positionName,
             recruitNumbers: element.recruitNumbers,
             applyNumbers: 0,
@@ -99,8 +99,8 @@ router.patch("/:id", passport.authenticate('jwt', {session: false}), async (req,
             contest.homepage = req.body.homepage;
         }
 
-        if (req.body.applyStatus.positions) {
-            contest.applyStatus.positions = req.body.applyStatus.positions;
+        if (req.body.positions) {
+            contest.positions = req.body.positions;
         }
         
         await contest.save();
@@ -126,16 +126,24 @@ router.delete("/delete/:id", passport.authenticate('jwt', {session: false}), asy
 router.patch("/participate/:id", async (req, res) => {
     try {
         const contest = await Contest.findOne({ _id: req.params.id });
-        contest.applyStatus.positions.forEach(element => {
+        let positionsIdx = -1;
+        contest.positions.forEach((element, index) => {
             if (element.positionName === req.body.positionName) {
                 element.applyMembers.push(req.body.volunteer);
+                console.log(req.body.volunteer);
                 element.applyNumbers += 1;
+                positionsIdx = index;
                 return;
             }
         });
+        contest.applyStatus.totalApplyNumbers += 1;
+        console.log(1);
+        //contest.applyStatus.positions[positionsIdx].markModified('applyMembers');
+        console.log(2);
         await contest.save();
         res.send(contest);
-    } catch {
+    } catch (e) {
+        console.log(e);
         res.status(404);
         res.send({ error: "Contest doesn't exist!" });
     }
@@ -145,32 +153,35 @@ router.patch("/participate/:id", async (req, res) => {
 router.patch("/confirmMember/:id", async (req, res) => {
     try {
         const contest = await Contest.findOne({ _id: req.params.id });
-
-        if (contest.confirmedMembers.membersNum >= contest.totalMembers) {
-            res.status(400);
-            res.send("Need to increase more total members.");
-            return
+        if (contest.closingStatus === true) {
+            throw new Error("closed");
         }
+        contest.applyStatus.positions.forEach(element => {
+            if (element.positionName === req.body.positionName) {
+                element.confirmedMembers.push(req.body.volunteer);
+                element.confirmedNumbers += 1;
 
-        const memberIdx = contest.volunteers.indexOf(req.body.member);
-        if (memberIdx > -1) contest.volunteers.splice(memberIdx, 1);
-        else throw new Error("isNotVolunteer");
+                const idx = element.applyMembers.indexOf(req.body.volunteer);
+                element.applyMembers.splice(idx, 1);
+                element.applyNumbers -= 1;
+                return;
+            }
+        });
+        contest.applyStatus.totalConfirmedNumbers += 1;
 
-        contest.confirmedMembers.membersList.push( req.body.member );
-        contest.confirmedMembers.membersNum += 1;
-
-        if (contest.confirmedMembers.membersNum === contest.totalMembers) {
+        if (contest.applyStatus.totalConfirmedNumbers === contest.totalMembers) {
             contest.closingStatus = true;
         }
+        contest.markModified('confirmedMembers');
 
         await contest.save();
 
         res.status(201);
         res.send(contest);
     } catch (e) {
-        if (e.message === "isNotVolunteer") {
+        if (e.message === "closed") {
             res.status(403);
-            res.send({ error: "The member is not volunteer." });
+            res.send({ error: "This contest is closed." });
         }
         res.status(404);
         res.send({ error: "Contest doesn't exist!" });
