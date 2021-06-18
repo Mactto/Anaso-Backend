@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const { Contest } = require('../models/Contest');
+const { User } = require('../models/User');
 const upload = require('../modules/multer');
 
 // [GET] read contest lists
@@ -189,6 +190,21 @@ router.patch("/confirmMember/:id", passport.authenticate('jwt', {session: false}
             res.status(403);
             res.send({ error: "This contest is closed." });
         }
+        res.status(404);
+        res.send({ error: "Contest doesn't exist!" });
+    }
+});
+
+// [GET] search contest list at user's id
+router.get("/user/contestlist/:id", async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.params.id });
+        userEmail = user.email;
+
+        const userContests = await Contest.find({ "positions": { $elemMatch: { "confirmedMembers": userEmail } }});
+
+        res.send(userContests);
+    } catch {
         res.status(404);
         res.send({ error: "Contest doesn't exist!" });
     }
