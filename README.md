@@ -8,6 +8,11 @@
 
 * [최세환](https://github.com/Mactto) (Backend Developer)
 
+User Model 설계 및 Rest API 구현
+JWT Token 인증 방식 구현 (passport-jwt 사용)
+미디어 파일 AWS S3 업로드 구현 (multer-s3 사용)
+
+
 ### 🔧 기술 스택(Technology Stack)
 
 * Node.js
