@@ -3,6 +3,11 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=node
 
 ### Node ###
+
+config/dev.js
+config/s3.json
+.uploads/
+
 # Logs
 logs
 *.log
