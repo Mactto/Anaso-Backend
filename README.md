@@ -8,6 +8,11 @@
 
 * [최세환](https://github.com/Mactto) (Backend Developer)
 
+User Model 설계 및 Rest API 구현  
+JWT Token 인증 방식 구현 (passport-jwt 사용)  
+미디어 파일 AWS S3 업로드 구현 (multer-s3 사용)  
+
+
 ### 🔧 기술 스택(Technology Stack)
 
 * Node.js
@@ -45,16 +50,3 @@ ex) [BE] 개발:: 로그인기능 구현 (율희)
 * Google JavaScript Style Guide
 * Standard JS
 * Airbnb js style guide
-* Airbnb js style guide 번역본
-
-
-
----
-## 💻서버 구동
-1. key 파일 위치 시키기
-2. nodemon 설치
-> npm install nodemon --save-dev
-3. 아래 명령어 입력 (JWT 토큰 키 설정)
-> export JWT_SECRET="시크릿키"
-4. npm run start
-> npm run start 
